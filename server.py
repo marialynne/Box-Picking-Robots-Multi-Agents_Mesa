@@ -1,4 +1,4 @@
-from bootleg_model import *
+from warehouse_model import *
 import matplotlib.pyplot as plt
 import pandas as pd
 from mesa.visualization.UserParam import UserSettableParameter
@@ -47,7 +47,7 @@ grid = mesa.visualization.CanvasGrid(
     agent_portrayal, 21, 21, 600, 600)
 
 server = mesa.visualization.ModularServer(
-    BootlegModel, [
+    WarehouseModel, [
         grid], "Bootleg", simulation_params
 )
 

@@ -1,6 +1,7 @@
 import mesa
 import random
 import math
+from box_agent import BoxAgent
 
 class MinionAgent(mesa.Agent):     
     def __init__(self, unique_id, model):
@@ -8,6 +9,7 @@ class MinionAgent(mesa.Agent):
         self.type = 2
         self.width = 1
         self.prevCells = []
+        self.box = None
         self.stepsToDestination = 0
         self.destination = None
 
@@ -28,7 +30,7 @@ class MinionAgent(mesa.Agent):
 
     def getToDestination(self):
         neighbors = self.model.grid.get_neighborhood(self.pos, False)
-        if self.destination in neighbors: return
+        if self.destination in neighbors: return True
         bestPoint = None
         bestDistance = -1
         for neighbor in neighbors:
@@ -43,9 +45,27 @@ class MinionAgent(mesa.Agent):
             self.prevCells.append(bestPoint)
             self.stepsToDestination += 1
             self.model.grid.move_agent(self, bestPoint)
+        return False
 
     def setDestination(self, destination):
         self.destination = destination
+
+    def pickBox(self):
+        box = self.model.grid.get_cell_list_contents([self.destination])
+        if len(box) > 0:
+            box = box[0]
+            self.box = box
+            self.model.grid.remove_agent(box)
+            self.destination = (0, 20)
+            self.stepsToDestination = 0
+
+    def pileBox(self):
+        while len(self.model.grid.get_cell_list_contents([self.destination])) >= 5:
+            self.destination = (self.destination[0] + 1, self.destination[1])
+            self.getToDestination()
+        self.model.grid.place_agent(self.box, self.destination)
+        self.destination = None
+        self.box = None
 
     def step(self):
         if not self.destination: 
@@ -53,5 +73,7 @@ class MinionAgent(mesa.Agent):
             self.randomMove()
         else:
             if self.stepsToDestination == 0: self.prevCells = []
-            self.getToDestination()
+            if self.getToDestination(): self.pickBox()
+            if self.pos[1] >= 19: self.pileBox()
+            print(self.prevCells)
         return

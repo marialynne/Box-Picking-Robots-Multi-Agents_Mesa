@@ -5,7 +5,7 @@ from wall_agent import WallAgent
 from box_agent import BoxAgent
 from minion_agent import MinionAgent
 
-class BootlegModel(mesa.Model):     
+class WarehouseModel(mesa.Model):     
     def __init__(self, agents, time):
         self.schedule = mesa.time.RandomActivationByType(self)
         self.running = True
@@ -36,6 +36,7 @@ class BootlegModel(mesa.Model):
             if type(agent) == MinionAgent: agent.setDestination((10, 10))
             self.schedule.add(agent)
             emptyCell = self.grid.find_empty()
+            while emptyCell[1] >= 18: emptyCell = self.grid.find_empty()
             self.grid.place_agent(agent, emptyCell)
             self.id += 1
 
