@@ -24,11 +24,39 @@ class WarehouseModel(mesa.Model):
         self.schedule.add(agent)
         self.grid.place_agent(agent, (0, 0))
         self.id += 1
+        agent = MinionAgent(self.id, self)
+        agent.setDestination((10, 10))
+        self.schedule.add(agent)
+        self.grid.place_agent(agent, (0, 0))
+        self.id += 1
+        agent = MinionAgent(self.id, self)
+        agent.setDestination((4, 18))
+        self.schedule.add(agent)
+        self.grid.place_agent(agent, (0, 0))
+        self.id += 1
+        agent = MinionAgent(self.id, self)
+        agent.setDestination((5, 8))
+        self.schedule.add(agent)
+        self.grid.place_agent(agent, (0, 0))
+        self.id += 1
         
         agent = BoxAgent(self.id, self)
         self.schedule.add(agent)
         self.grid.place_agent(agent, (15, 18))
         self.id += 1
+        agent = BoxAgent(self.id, self)
+        self.schedule.add(agent)
+        self.grid.place_agent(agent, (10, 10))
+        self.id += 1
+        agent = BoxAgent(self.id, self)
+        self.schedule.add(agent)
+        self.grid.place_agent(agent, (4, 18))
+        self.id += 1
+        agent = BoxAgent(self.id, self)
+        self.schedule.add(agent)
+        self.grid.place_agent(agent, (5, 8))
+        self.id += 1
+
 
         for _ in range(self.agents):
             index = random.randrange(len(agentTypes))

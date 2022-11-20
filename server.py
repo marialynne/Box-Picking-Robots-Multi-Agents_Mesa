@@ -29,7 +29,7 @@ simulation_params = {
     "agents": UserSettableParameter(
         "slider",
         "Number of Agents",
-        value=30,
+        value=20,
         min_value=1,
         max_value=30,
         step=1,

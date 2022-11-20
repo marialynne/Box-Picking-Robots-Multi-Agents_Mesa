@@ -34,13 +34,13 @@ class MinionAgent(mesa.Agent):
         bestPoint = None
         bestDistance = -1
         for neighbor in neighbors:
-            if self.model.grid.is_cell_empty(neighbor) and (not neighbor in self.prevCells):
+            if self.model.grid.is_cell_empty(neighbor) and (not neighbor in self.prevCells) and neighbor[1] <= 19:
                 distance = self.distanceBetweenPoints(self.destination, neighbor)
                 if distance < bestDistance or bestDistance < 0:
                     bestDistance = distance
                     bestPoint = neighbor
         if (bestDistance < 0): 
-            self.prevCells = [self.prevCells[-1]]
+            if len(self.prevCells) > 0: self.prevCells = [self.prevCells[-1]]
         else:
             self.prevCells.append(bestPoint)
             self.stepsToDestination += 1
@@ -74,6 +74,6 @@ class MinionAgent(mesa.Agent):
         else:
             if self.stepsToDestination == 0: self.prevCells = []
             if self.getToDestination(): self.pickBox()
-            if self.pos[1] >= 19: self.pileBox()
-            print(self.prevCells)
+            if self.pos[1] >= 19 and self.pos[0] == self.destination[0]: self.pileBox()
+            print(self.model.grid.get_cell_list_contents([(0, 20)]))
         return
