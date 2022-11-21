@@ -17,6 +17,10 @@ class WarehouseModel(mesa.Model):
         self.grid = mesa.space.MultiGrid(rows, columns, False)
         # agentTypes = [WallAgent, WallAgent, BoxAgent, BoxAgent, BoxAgent]
         agentTypes = [WallAgent, WallAgent, WallAgent, WallAgent]
+        self.datacollector = mesa.DataCollector({
+            "Minion Random Moves": WarehouseModel.minionRandomMovements,
+            "Minion Destination Movements": WarehouseModel.minionDestinationMovements,
+        })
 
         # Add only one minion
         agent = MinionAgent(self.id, self)
@@ -24,10 +28,10 @@ class WarehouseModel(mesa.Model):
         self.schedule.add(agent)
         self.grid.place_agent(agent, (0, 0))
         self.id += 1
-        
+    
         agent = BoxAgent(self.id, self)
         self.schedule.add(agent)
-        self.grid.place_agent(agent, (15, 18))
+        self.grid.place_agent(agent, (10, 10))
         self.id += 1
 
         for _ in range(self.agents):
@@ -53,3 +57,34 @@ class WarehouseModel(mesa.Model):
 
     def step(self):
         self.schedule.step()
+        self.datacollector.collect(self)
+
+    @staticmethod
+    def mainRobotMovements(model) -> int: # See if it works with main robot
+        #mainRobot = [agent for agent in model.schedule.agents if type(agent) == MainRobotAgent]
+        #return mainRobot.steps
+        return
+
+    @staticmethod
+    def minionRandomMovements(model) -> int: 
+        minions = [agent for agent in model.schedule.agents if type(agent) == MinionAgent]
+        totalRandomSteps = 0
+        for minion in minions:
+            totalRandomSteps += minion.randomSteps 
+        return totalRandomSteps
+
+    @staticmethod
+    def minionDestinationMovements(model) -> int:
+        minions = [agent for agent in model.schedule.agents if type(agent) == MinionAgent]
+        totalDestinationSteps = 0
+        for minion in minions:
+            totalDestinationSteps += minion.destinationSteps
+        return totalDestinationSteps
+
+    @staticmethod
+    def boxesPerMinion(model, minion = 1) -> int: 
+        return 1
+
+    @staticmethod
+    def percentagePiledBoxes(model) -> int: 
+        return 1
