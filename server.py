@@ -44,19 +44,28 @@ def agent_portrayal(agent):
     return portrayal
 
 simulation_params = {
-    "agents": UserSettableParameter(
+    "walls": UserSettableParameter(
         "slider",
-        "Number of Agents",
-        value=30,
+        "Number of walls",
+        value=20,
         min_value=1,
         max_value=30,
+        step=1,
+        description="Number of Agents",
+    ),
+    "boxes": UserSettableParameter(
+        "slider",
+        "Number of boxes",
+        value=5,
+        min_value=1,
+        max_value=20,
         step=1,
         description="Number of Agents",
     ),
     "time": UserSettableParameter(
         "number",
         "Time",
-        25,
+        100,
         description="Time to end",
     )
 }
