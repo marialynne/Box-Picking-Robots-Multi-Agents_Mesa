@@ -64,16 +64,16 @@ class MinionAgent(mesa.Agent):
             self.destination = (self.destination[0] + 1, self.destination[1])
             self.getToDestination()
         self.model.grid.place_agent(self.box, self.destination)
-        self.destination = None
+        self.stepsToDestination = 0
         self.box = None
+        self.prevCells = []
+        self.destination = None
 
     def step(self):
         if not self.destination: 
-            self.stepsToDestination = 0
             self.randomMove()
         else:
             if self.stepsToDestination == 0: self.prevCells = []
             if self.getToDestination(): self.pickBox()
             if self.pos[1] >= 19 and self.pos[0] == self.destination[0]: self.pileBox()
-            print(self.model.grid.get_cell_list_contents([(0, 20)]))
         return
