@@ -1,11 +1,11 @@
 import mesa
-import numpy as np
 import random
 from wall_agent import WallAgent
 from box_agent import BoxAgent
 from minion_agent import MinionAgent
+from stack_agent import StackAgent
 
-class BootlegModel(mesa.Model):     
+class WarehouseModel(mesa.Model):     
     def __init__(self, agents, time):
         self.schedule = mesa.time.RandomActivationByType(self)
         self.running = True
@@ -47,6 +47,9 @@ class BootlegModel(mesa.Model):
                 self.grid.place_agent(nextAgent, neighborCell)
                 emptyCell = neighborCell
                 self.id += 1
+    def next_id(self) -> int:
+        self.current_id += 1
+        return self.current_id
 
     def step(self):
         self.schedule.step()

@@ -7,4 +7,4 @@ class BoxAgent(mesa.Agent):
         self.width = 1
 
     def step(self):
-        return
+        pass

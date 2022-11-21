@@ -1,22 +1,40 @@
-from bootleg_model import *
+import mesa
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
+from warehouse_model import WarehouseModel
 from mesa.visualization.UserParam import UserSettableParameter
-
-PIXELS_GRID = 500
+from mesa.visualization.modules import ChartModule, CanvasGrid
+PIXELS_GRID = 600
 
 def agent_portrayal(agent):
     portrayal = {"Shape": "circle", "Filled": "true"}
-    if agent.type == 2: # Robot
-        portrayal["Color"] = "blue"
-        portrayal["Layer"] = 1
-        portrayal["r"] = 0.8
-    elif agent.type == 1: # Box
+    if agent.type == 5: # Stack
         portrayal["Shape"] = "rect"
-        portrayal["Color"] = "yellow"
-        portrayal["Layer"] = 1
+        portrayal["Color"] = "sienna"
+        portrayal["Layer"] = 0
         portrayal["h"] = 1
         portrayal["w"] = 1
+    elif agent.type == 4: # Empty Stack
+        portrayal["Shape"] = "rect"
+        portrayal["Color"] = "peru"
+        portrayal["Layer"] = 0
+        portrayal["h"] = 1
+        portrayal["w"] = 1
+    elif agent.type == 3: # Main Robot
+        portrayal["Color"] = "darkviolet"
+        portrayal["Layer"] = 1
+        portrayal["r"] = 0.8
+    elif agent.type == 2: # Minion
+        portrayal["Color"] = "gold"
+        portrayal["Layer"] = 1
+        portrayal["r"] = 0.5
+    elif agent.type == 1: # Box
+        portrayal["Shape"] = "rect"
+        portrayal["Color"] = "seagreen"
+        portrayal["Layer"] = 1
+        portrayal["h"] = 0.6
+        portrayal["w"] = 0.6
     else: # Walls
         portrayal["Shape"] = "rect"
         portrayal["Color"] = "grey"
@@ -43,12 +61,12 @@ simulation_params = {
     )
 }
 
-grid = mesa.visualization.CanvasGrid(
-    agent_portrayal, 21, 21, 600, 600)
+grid = CanvasGrid(agent_portrayal, 21, 21, PIXELS_GRID, PIXELS_GRID)
 
 server = mesa.visualization.ModularServer(
-    BootlegModel, [
-        grid], "Bootleg", simulation_params
+    WarehouseModel, [
+        grid], 
+    "WarehouseModel", simulation_params
 )
 
 server.port = 853
