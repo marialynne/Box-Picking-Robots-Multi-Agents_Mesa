@@ -44,7 +44,8 @@ class WarehouseModel(mesa.Model):
 
         for _ in range(self.walls):
             index = random.randrange(len(agentTypes))
-            agent = agentTypes[index](self.next_id(), self)
+            agent = WallAgent(self.next_id(), self)
+            
             if type(agent) == MinionAgent: agent.setDestination((10, 10))
             self.schedule.add(agent)
             emptyCell = self.grid.find_empty()
