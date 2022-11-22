@@ -1,5 +1,4 @@
 import mesa
-import random
 from wall_agent import WallAgent
 from box_agent import BoxAgent
 from minion_agent import MinionAgent
@@ -19,12 +18,10 @@ class WarehouseModel(mesa.Model):
         minions = 4
         self.time = time
         self.grid = mesa.space.MultiGrid(rows, columns, False)
-        # agentTypes = [WallAgent, WallAgent, BoxAgent, BoxAgent, BoxAgent]
-        agentTypes = [WallAgent, WallAgent, WallAgent, WallAgent]
 
         #Add Scanner Agent
-        agent = ScannerAgent(self.next_id(), visionRange, self)
-        self.grid.place_agent(agent, (20, 19))
+        agent = ScannerAgent(self.next_id(), self, visionRange,(rows- hallwayWidth), columns)
+        self.addAgent(agent,10, 8)
 
         for _ in range(self.walls):
             agent = WallAgent(self.next_id(), self)
