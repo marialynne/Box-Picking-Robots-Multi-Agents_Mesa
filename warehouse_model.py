@@ -41,11 +41,6 @@ class WarehouseModel(mesa.Model):
             agent = StackAgent(self.next_id(), self)
             self.addAgent(agent,col,rows-1)
                 
-                
-            
-
-            
-
     def addAgent(self, agent, row, col) -> None:
         self.schedule.add(agent)
         self.grid.place_agent(agent,(row, col))
