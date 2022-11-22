@@ -54,7 +54,16 @@ simulation_params = {
         "Number of boxes",
         value=5,
         min_value=1,
-        max_value=20,
+        max_value=5,
+        step=1,
+        description="Number of boxes",
+    ),
+    "visionRange": UserSettableParameter(
+        "slider",
+        "Scanner Range of Vision",
+        value=5,
+        min_value=1,
+        max_value=5,
         step=1,
         description="Number of Agents",
     ),
@@ -74,5 +83,5 @@ server = mesa.visualization.ModularServer(
     "WarehouseModel", simulation_params
 )
 
-server.port = 853
+server.port = 2005
 server.launch()

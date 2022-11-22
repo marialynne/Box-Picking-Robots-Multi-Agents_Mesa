@@ -15,7 +15,7 @@ class MinionAgent(mesa.Agent):
 
     def mantainPrevCells(self):
         while len(self.prevCells) >= 25:
-            self.prevCells.pop()
+            self.prevCells.pop()#
 
     def randomMove(self):
         neighborCell = random.choice(self.model.grid.get_neighborhood(self.pos, False))

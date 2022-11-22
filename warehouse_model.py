@@ -4,9 +4,10 @@ from wall_agent import WallAgent
 from box_agent import BoxAgent
 from minion_agent import MinionAgent
 from stack_agent import StackAgent
+from scanner_agent import ScannerAgent
 
 class WarehouseModel(mesa.Model):     
-    def __init__(self, walls, boxes, time):
+    def __init__(self, walls, boxes, visionRange, time):
         self.schedule = mesa.time.RandomActivationByType(self)
         self.running = True
         self.current_id = 0
@@ -18,7 +19,13 @@ class WarehouseModel(mesa.Model):
         minions = 4
         self.time = time
         self.grid = mesa.space.MultiGrid(rows, columns, False)
-        
+        # agentTypes = [WallAgent, WallAgent, BoxAgent, BoxAgent, BoxAgent]
+        agentTypes = [WallAgent, WallAgent, WallAgent, WallAgent]
+
+        #Add Scanner Agent
+        agent = ScannerAgent(self.next_id(), visionRange, self)
+        self.grid.place_agent(agent, (20, 19))
+
         for _ in range(self.walls):
             agent = WallAgent(self.next_id(), self)
             emptyCell = self.grid.find_empty()
