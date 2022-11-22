@@ -32,8 +32,8 @@ class WarehouseModel(mesa.Model):
         })
 
         #Add Scanner Agent
-        agent = ScannerAgent(self.next_id(), visionRange, self)
-        self.addAgent(agent, 20, 19)
+        agent = ScannerAgent(self.next_id(), self, visionRange,(rows- hallwayWidth), columns)
+        self.addAgent(agent,10, 8)
 
         for _ in range(self.walls):
             agent = WallAgent(self.next_id(), self)
