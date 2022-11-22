@@ -53,7 +53,7 @@ simulation_params = {
         "slider",
         "Number of boxes",
         value=5,
-        min_value=1,
+        min_value=5,
         max_value=25,
         step=1,
         description="Number of boxes",
@@ -76,16 +76,30 @@ simulation_params = {
 }
 
 # Charts
+scannerAgentMovements = ChartModule([{ "Label": "Scanner Agent Moves", "Color": "Blue" }], data_collector_name='datacollector')
 minionMovements_random = ChartModule([{ "Label": "Minion Random Moves", "Color": "Blue" }], data_collector_name='datacollector')
 minionMovements_destination = ChartModule([ {"Label": "Minion Destination Movements", "Color": "Red" }], data_collector_name='datacollector')
+minion1_boxes = ChartModule([ {"Label": "Minion 1 Total Piled Boxes", "Color": "Red" }], data_collector_name='datacollector')
+minion2_boxes = ChartModule([ {"Label": "Minion 2 Total Piled Boxes", "Color": "Red" }], data_collector_name='datacollector')
+minion3_boxes = ChartModule([ {"Label": "Minion 3 Total Piled Boxes", "Color": "Red" }], data_collector_name='datacollector')
+minion4_boxes = ChartModule([ {"Label": "Minion 4 Total Piled Boxes", "Color": "Red" }], data_collector_name='datacollector')
+minion5_boxes = ChartModule([ {"Label": "Minion 5 Total Piled Boxes", "Color": "Red" }], data_collector_name='datacollector')
+percentagePiled = ChartModule([ {"Label": "Percentage piled boxes", "Color": "Blue" }], data_collector_name='datacollector')
 
 grid = CanvasGrid(agent_portrayal, 21, 21, PIXELS_GRID, PIXELS_GRID)
 
 server = mesa.visualization.ModularServer(
     WarehouseModel, [
         grid,
+        scannerAgentMovements,
         minionMovements_random,
-        minionMovements_destination], 
+        minionMovements_destination,
+        minion1_boxes,
+        minion2_boxes,
+        minion3_boxes,
+        minion4_boxes,
+        minion5_boxes,
+        percentagePiled], 
     "WarehouseModel", simulation_params
 )
 

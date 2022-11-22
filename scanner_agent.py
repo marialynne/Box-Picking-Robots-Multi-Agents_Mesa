@@ -1,5 +1,4 @@
 import mesa
-import random
 
 from box_agent import BoxAgent
 from wall_agent import WallAgent
@@ -14,6 +13,7 @@ class ScannerAgent(mesa.Agent):
         self.visionRange = visionRange
         self.visited = []
         self.foundBoxes = []
+        self.movements = 0
     
     def moveRandom(self):
         x, y = self.pos

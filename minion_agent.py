@@ -66,9 +66,12 @@ class MinionAgent(mesa.Agent):
             self.boxesCount += 1
 
     def pileBox(self):
-        while len(self.model.grid.get_cell_list_contents([self.destination])) >= 5:
+        stack = self.model.grid.get_cell_list_contents([self.destination])
+        while stack[0].boxes >= 5:
             self.destination = (self.destination[0] + 1, self.destination[1])
+            stack = self.model.grid.get_cell_list_contents([self.destination])
             self.getToDestination()
+        stack[0].addBox(self.box)
         self.model.grid.place_agent(self.box, self.destination)
         self.stepsToDestination = 0
         self.box = None

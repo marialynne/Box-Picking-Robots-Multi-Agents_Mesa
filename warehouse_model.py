@@ -1,5 +1,4 @@
 import mesa
-import random
 from wall_agent import WallAgent
 from box_agent import BoxAgent
 from minion_agent import MinionAgent
@@ -13,15 +12,15 @@ class WarehouseModel(mesa.Model):
         self.current_id = 0
         self.walls = walls
         self.boxes = boxes
+        self.totalBoxes = boxes
         rows = 21
         columns = 21
         hallwayWidth = 3
-        minions = 4
+        minions = 5
         self.time = time
         self.grid = mesa.space.MultiGrid(rows, columns, False)
-        # agentTypes = [WallAgent, WallAgent, BoxAgent, BoxAgent, BoxAgent]
-        agentTypes = [WallAgent, WallAgent, WallAgent, WallAgent]
         self.datacollector = mesa.DataCollector({
+            "Scanner Agent Moves": WarehouseModel.mainRobotMovements,
             "Minion Random Moves": WarehouseModel.minionRandomMovements,
             "Minion Destination Movements": WarehouseModel.minionDestinationMovements,
             "Minion 1 Total Piled Boxes": lambda model: WarehouseModel.boxesPerMinion(model),
@@ -29,18 +28,18 @@ class WarehouseModel(mesa.Model):
             "Minion 3 Total Piled Boxes": lambda model: WarehouseModel.boxesPerMinion(model, 3),
             "Minion 4 Total Piled Boxes": lambda model: WarehouseModel.boxesPerMinion(model, 4),
             "Minion 5 Total Piled Boxes": lambda model: WarehouseModel.boxesPerMinion(model, 5),
+            "Percentage piled boxes": WarehouseModel.percentagePiledBoxes,
         })
 
         #Add Scanner Agent
         agent = ScannerAgent(self.next_id(), visionRange, self)
-        self.grid.place_agent(agent, (20, 19))
+        self.addAgent(agent, 20, 19)
 
         for _ in range(self.walls):
             agent = WallAgent(self.next_id(), self)
             emptyCell = self.grid.find_empty()
             while (emptyCell[1] >= ((rows-1) - hallwayWidth)) and self.haveNeighbors(emptyCell):  emptyCell = self.grid.find_empty()
             self.grid.place_agent(agent, emptyCell)
-            # self.haveNeighbors(emptyCell)
         
         for _ in range(self.boxes + minions):
             emptyCell = self.grid.find_empty()
@@ -56,6 +55,12 @@ class WarehouseModel(mesa.Model):
         for col in range(0,columns):
             agent = StackAgent(self.next_id(), self)
             self.addAgent(agent,col,rows-1)
+        
+        # QUITAR ESTO ES DE PRUEBA
+        boxesList = [agent for agent in self.schedule.agents if type(agent) == BoxAgent]
+        agents = [agent for agent in self.schedule.agents if type(agent) == MinionAgent]
+        for index, agent in enumerate(agents):
+            agents[index].setDestination(boxesList[index].pos)
                 
     def addAgent(self, agent, row, col) -> None:
         self.schedule.add(agent)
@@ -81,9 +86,8 @@ class WarehouseModel(mesa.Model):
 
     @staticmethod
     def mainRobotMovements(model) -> int: # See if it works with main robot
-        #mainRobot = [agent for agent in model.schedule.agents if type(agent) == MainRobotAgent]
-        #return mainRobot.steps
-        return
+        scannerAgent = [agent for agent in model.schedule.agents if type(agent) == ScannerAgent]
+        return scannerAgent[0].movements if len(scannerAgent) > 0 else 0
 
     @staticmethod
     def minionRandomMovements(model) -> int: 
@@ -103,9 +107,13 @@ class WarehouseModel(mesa.Model):
 
     @staticmethod
     def boxesPerMinion(model, minion = 1) -> int: 
-        minion = [agent for agent in model.schedule.agents if type(agent) == MinionAgent][minion]
+        minion = [agent for agent in model.schedule.agents if type(agent) == MinionAgent][minion - 1]
         return minion.boxesCount
 
     @staticmethod
     def percentagePiledBoxes(model) -> int: 
-        return 1
+        model.totalPiledBoxes = 0
+        stacks = [agent for agent in model.schedule.agents if type(agent) == StackAgent]
+        for stack in stacks:
+            model.totalPiledBoxes += stack.boxes
+        return (model.totalPiledBoxes * 100) / model.totalBoxes
