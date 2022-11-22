@@ -68,10 +68,53 @@ class ScannerAgent(mesa.Agent):
             self.index += 1
             self.arrived = False
         else: self.getToDestination(self.destinationList[self.index])
-    
-    def searchSurroundings(self):
-        x,y = self.pos
+
+    def outOfBounds(self, position):
+        if position[0] >= self.model.columns: return True
+        if position[0] < 0: return True
+        if position[1] >= self.model.rows: return True
+        if position[1] < 0: return True
+        return False
+
+    def getFieldView(self, cells):
+        print('CELLS => ', cells)
+        if len(cells) > 0:
+            index = 0
+            while(index < len(cells) and type(cells[index]) != WallAgent):
+                if type(cells[index]) == BoxAgent and not cells[index] in self.foundBoxes:
+                    self.foundBoxes.append(cells[index].pos)
+                index += 1
+
         
+    def searchSurroundings(self):
+        northCells = []
+        eastCells = []
+        westCells = []
+        southCells = []
+        for index in range(1, self.visionRange + 1):
+            northCell = (self.pos[0], self.pos[1] + index)
+            eastCell = (self.pos[0] + index, self.pos[1])
+            westCell = (self.pos[0] - index, self.pos[1])
+            southCell = (self.pos[0], self.pos[1] - index)
+            if not self.outOfBounds(northCell): northCells.append(northCell)
+            if not self.outOfBounds(eastCell): eastCells.append(eastCell)
+            if not self.outOfBounds(westCell): westCells.append(westCell)
+            if not self.outOfBounds(southCell): southCells.append(southCell)
+
+        print('NORTH =>', northCells)
+        print('EAST =>', eastCells)
+        print('WEST =>', westCells)
+        print('SOUTH =>', southCells)
+
+        print(self.model.grid.get_cell_list_contents(northCells))
+        
+        self.getFieldView(self.model.grid.get_cell_list_contents(northCells))
+        self.getFieldView(self.model.grid.get_cell_list_contents(eastCells))
+        self.getFieldView(self.model.grid.get_cell_list_contents(westCells))
+        self.getFieldView(self.model.grid.get_cell_list_contents(southCells))
+
+        print('BOXES =>', self.foundBoxes)
+
         """ for i in range(1, self.visionRange + 1):
             if x + i <= 20:
                 currentCell = (x + i, y)
