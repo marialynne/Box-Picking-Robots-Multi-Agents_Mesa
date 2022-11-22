@@ -4,6 +4,7 @@ import math
 import numpy as np
 from box_agent import BoxAgent
 from wall_agent import WallAgent
+from minion_agent import MinionAgent
 
 class ScannerAgent(mesa.Agent):     
     def __init__(self, unique_id, model, visionRange, rows, columns):
@@ -31,8 +32,13 @@ class ScannerAgent(mesa.Agent):
         for index,value in enumerate(self.destinationList):
             if index%2 != 0: self.destinationList.insert(index,(10,8))
 
-        print(list(self.destinationList))
+        #print(list(self.destinationList))
         
+    def checkIfFound(self, currentCell):
+        for i in range(0, len(self.foundBoxes)):
+            if currentCell == self.foundBoxes[i]:
+                return True
+        return False
     
     def distanceBetweenPoints(self, point1, point2):
         return math.sqrt(pow((point2[0] - point1[0]), 2) + pow((point2[1] - point1[1]), 2))
@@ -59,8 +65,78 @@ class ScannerAgent(mesa.Agent):
     def move(self):
         if self.getToDestination(self.destinationList[self.index]): self.index+=1
     
+    
+    def searchSurroundings(self):
+        x,y = self.pos
+        for i in range(1, self.visionRange + 1):
+            if x + i <= 20:
+                currentCell = (x + i, y)
+                cellmates = self.model.grid.get_cell_list_contents(currentCell)
+                for j in range (0, len(cellmates)):
+                    agent = cellmates[j]
+                    if type(agent) == BoxAgent and not self.checkIfFound(currentCell):
+                        self.foundBoxes.append(currentCell)
+                    elif type(agent) == WallAgent:
+                        i += 21
+                        break
+            else:
+                break
+
+        for i in range(1, self.visionRange + 1):
+            if x - i >= 0:
+                currentCell = (x - i, y)
+                cellmates = self.model.grid.get_cell_list_contents(currentCell)
+                for j in range (0, len(cellmates)):
+                    agent = cellmates[j]
+                    if type(agent) == BoxAgent and not self.checkIfFound(currentCell):
+                        self.foundBoxes.append(currentCell)
+                    elif type(agent) == WallAgent:
+                        i == -1
+                        break
+            else:
+                break
+
+        for i in range(1, self.visionRange + 1):
+            if y + i <= 20:
+                currentCell = (x, y + i)
+                cellmates = self.model.grid.get_cell_list_contents(currentCell)
+                for j in range (0, len(cellmates)):
+                    agent = cellmates[j]
+                    if type(agent) == BoxAgent and not self.checkIfFound(currentCell):
+                        self.foundBoxes.append(currentCell)
+                    elif type(agent) == WallAgent:
+                        i += 21
+                        break
+            else:
+                break
+        
+        for i in range(1, self.visionRange + 1):
+            if y - i >= 0:
+                currentCell = (x, y - i)
+                cellmates = self.model.grid.get_cell_list_contents(currentCell)
+                for j in range (0, len(cellmates)):
+                    agent = cellmates[j]
+                    if type(agent) == BoxAgent and not self.checkIfFound(currentCell):
+                        self.foundBoxes.append(currentCell)
+                    elif type(agent) == WallAgent:
+                        i == -1
+                        break
+            else:
+                break
+    
+    def assingBox(self):
+        minions = [agent for agent in self.model.schedule.agents if type(agent) == MinionAgent]
+        for minion in minions:
+            if minion.box == None and len(self.foundBoxes) > 0:
+                minion.setDestination(self.foundBoxes[-1])
+                self.foundBoxes.pop()
+                 
+    
     def step(self):
         if(len(self.destinationList) == 0): self.getDestinations()
         self.move()
-        print(self.destinationList[self.index])
+        self.searchSurroundings()
+        if(len(self.foundBoxes) > 0): self.assingBox()
+        self.movements += 1
         pass
+    

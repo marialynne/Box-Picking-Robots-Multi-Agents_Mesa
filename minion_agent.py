@@ -2,7 +2,7 @@ import mesa
 import random
 import math
 from box_agent import BoxAgent
-
+from stack_agent import StackAgent
 class MinionAgent(mesa.Agent):     
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
@@ -18,7 +18,7 @@ class MinionAgent(mesa.Agent):
 
     def mantainPrevCells(self):
         while len(self.prevCells) >= 25:
-            self.prevCells.pop()#
+            self.prevCells.pop()
 
     def randomMove(self):
         neighborCell = random.choice(self.model.grid.get_neighborhood(self.pos, False))
@@ -66,17 +66,20 @@ class MinionAgent(mesa.Agent):
             self.boxesCount += 1
 
     def pileBox(self):
-        stack = self.model.grid.get_cell_list_contents([self.destination])
-        while stack[0].boxes >= 5:
-            self.destination = (self.destination[0] + 1, self.destination[1])
-            stack = self.model.grid.get_cell_list_contents([self.destination])
-            self.getToDestination()
-        stack[0].addBox(self.box)
-        self.model.grid.place_agent(self.box, self.destination)
-        self.stepsToDestination = 0
-        self.box = None
-        self.prevCells = []
-        self.destination = None
+        stack = [agent for agent in self.model.grid.get_cell_list_contents([self.destination]) if type(agent) == StackAgent]
+        print(stack)
+        if len(stack) > 0:
+            while stack[0].boxes >= 5:
+                self.destination = (self.destination[0] + 1, self.destination[1])
+                stack = self.model.grid.get_cell_list_contents([self.destination])
+                self.getToDestination()
+            stack[0].addBox(self.box)
+            if self.box != None:
+                self.model.grid.place_agent(self.box, self.destination)
+                self.stepsToDestination = 0
+                self.box = None
+                self.prevCells = []
+                self.destination = None
 
     def step(self):
         if not self.destination: 

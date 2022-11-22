@@ -2,6 +2,7 @@ import mesa
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from warehouse_model import WarehouseModel
 from mesa.visualization.UserParam import UserSettableParameter
 from mesa.visualization.modules import ChartModule, CanvasGrid
@@ -11,7 +12,7 @@ def agent_portrayal(agent):
     portrayal = {"Shape": "circle", "Filled": "true"}
 
     if agent.type == 4: # Stack
-        if agent.boxes <= 5: portrayal["Color"] = "sienna"
+        if agent.boxes < 5: portrayal["Color"] = "sienna"
         else: portrayal["Color"] = "peru"
         portrayal["Shape"] = "rect"
         portrayal["Layer"] = 0
@@ -104,25 +105,27 @@ server = mesa.visualization.ModularServer(
 )
 
 server.port = 2005
-server.launch()
+#server.launch()
 
 
 # Batch run
+
 def createPlot(results, dataValue, columns = []):
     results_df = pd.DataFrame(results)
     resultingDataFrame = pd.DataFrame(results_df, columns=[dataValue])
     print(resultingDataFrame)
     results_filtered = resultingDataFrame[(results_df.Step == 50)] # get last step resutls - TODO: CHANGE
     results_filtered.plot('iteration', dataValue)
-
-""" results = mesa.batch_run(
+    plt.show()
+    
+results = mesa.batch_run(
     WarehouseModel,
-    parameters={ "walls": 10, "boxes": 10, "time": 10 },
+    parameters={ "walls": 15, "boxes": 10, "time": 500 , "visionRange": 5},
     iterations=100,
-    max_steps=200,  # time
+    max_steps=500,  # time
     number_processes=1,
     data_collection_period=1,
     display_progress=True,
-) """
+) 
 
-# createPlot(results, 'Minion Random Moves', ['iteration', 'Minion Random Moves'])
+createPlot(results, 'Minion Random Moves', ['iteration', 'Minion Random Moves'])

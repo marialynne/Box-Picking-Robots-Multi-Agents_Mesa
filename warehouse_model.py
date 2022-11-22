@@ -55,12 +55,6 @@ class WarehouseModel(mesa.Model):
         for col in range(0,columns):
             agent = StackAgent(self.next_id(), self)
             self.addAgent(agent,col,rows-1)
-        
-        # QUITAR ESTO ES DE PRUEBA
-        boxesList = [agent for agent in self.schedule.agents if type(agent) == BoxAgent]
-        agents = [agent for agent in self.schedule.agents if type(agent) == MinionAgent]
-        for index, agent in enumerate(agents):
-            agents[index].setDestination(boxesList[index].pos)
                 
     def addAgent(self, agent, row, col) -> None:
         self.schedule.add(agent)
