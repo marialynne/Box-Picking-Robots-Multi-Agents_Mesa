@@ -31,7 +31,7 @@ class WarehouseModel(mesa.Model):
             emptyCell = self.grid.find_empty()
             while (emptyCell[1] >= ((rows-1) - hallwayWidth)) and self.haveNeighbors(emptyCell):  emptyCell = self.grid.find_empty()
             self.grid.place_agent(agent, emptyCell)
-            self.haveNeighbors(emptyCell)
+            # self.haveNeighbors(emptyCell)
         
         for _ in range(self.boxes + minions):
             emptyCell = self.grid.find_empty()
