@@ -28,12 +28,9 @@ class ScannerAgent(mesa.Agent):
                     self.destinationList.append((x,y))
         
         random.shuffle(self.destinationList)
-        
         for index,value in enumerate(self.destinationList):
             if index%2 != 0: self.destinationList.insert(index,(10,8))
 
-        #print(list(self.destinationList))
-        
     def checkIfFound(self, currentCell):
         for i in range(0, len(self.foundBoxes)):
             if currentCell == self.foundBoxes[i]:
@@ -77,14 +74,12 @@ class ScannerAgent(mesa.Agent):
         return False
 
     def getFieldView(self, cells):
-        print('CELLS => ', cells)
         if len(cells) > 0:
             index = 0
             while(index < len(cells) and type(cells[index]) != WallAgent):
                 if type(cells[index]) == BoxAgent and not cells[index] in self.foundBoxes:
                     self.foundBoxes.append(cells[index].pos)
                 index += 1
-
         
     def searchSurroundings(self):
         northCells = []
@@ -100,84 +95,17 @@ class ScannerAgent(mesa.Agent):
             if not self.outOfBounds(eastCell): eastCells.append(eastCell)
             if not self.outOfBounds(westCell): westCells.append(westCell)
             if not self.outOfBounds(southCell): southCells.append(southCell)
-
-        print('NORTH =>', northCells)
-        print('EAST =>', eastCells)
-        print('WEST =>', westCells)
-        print('SOUTH =>', southCells)
-
-        print(self.model.grid.get_cell_list_contents(northCells))
-        
         self.getFieldView(self.model.grid.get_cell_list_contents(northCells))
         self.getFieldView(self.model.grid.get_cell_list_contents(eastCells))
         self.getFieldView(self.model.grid.get_cell_list_contents(westCells))
         self.getFieldView(self.model.grid.get_cell_list_contents(southCells))
 
-        print('BOXES =>', self.foundBoxes)
-
-        """ for i in range(1, self.visionRange + 1):
-            if x + i <= 20:
-                currentCell = (x + i, y)
-                cellmates = self.model.grid.get_cell_list_contents(currentCell)
-                for j in range (0, len(cellmates)):
-                    agent = cellmates[j]
-                    if type(agent) == BoxAgent and not self.checkIfFound(currentCell):
-                        self.foundBoxes.append(currentCell)
-                    elif type(agent) == WallAgent:
-                        i += 21
-                        break
-            else:
-                break """
-
-        """ for i in range(1, self.visionRange + 1):
-            if x - i >= 0:
-                currentCell = (x - i, y)
-                cellmates = self.model.grid.get_cell_list_contents(currentCell)
-                for j in range (0, len(cellmates)):
-                    agent = cellmates[j]
-                    if type(agent) == BoxAgent and not self.checkIfFound(currentCell):
-                        self.foundBoxes.append(currentCell)
-                    elif type(agent) == WallAgent:
-                        i == -1
-                        break
-            else:
-                break """
-
-        """ for i in range(1, self.visionRange + 1):
-            if y + i <= 20:
-                currentCell = (x, y + i)
-                cellmates = self.model.grid.get_cell_list_contents(currentCell)
-                for j in range (0, len(cellmates)):
-                    agent = cellmates[j]
-                    if type(agent) == BoxAgent and not self.checkIfFound(currentCell):
-                        self.foundBoxes.append(currentCell)
-                    elif type(agent) == WallAgent:
-                        i += 21
-                        break
-            else:
-                break """
-        
-        """ for i in range(1, self.visionRange + 1):
-            if y - i >= 0:
-                currentCell = (x, y - i)
-                cellmates = self.model.grid.get_cell_list_contents(currentCell)
-                for j in range (0, len(cellmates)):
-                    agent = cellmates[j]
-                    if type(agent) == BoxAgent and not self.checkIfFound(currentCell):
-                        self.foundBoxes.append(currentCell)
-                    elif type(agent) == WallAgent:
-                        i == -1
-                        break
-            else:
-                break """
-    
     def assingBox(self):
         minions = [agent for agent in self.model.schedule.agents if type(agent) == MinionAgent]
         for minion in minions:
             if minion.box == None and len(self.foundBoxes) > 0:
                 minion.setDestination(self.foundBoxes[-1])
-                self.foundBoxes.pop()
-                 
+                self.foundBoxes.pop()  
     
     def step(self):
         if(len(self.destinationList) == 0): self.getDestinations()

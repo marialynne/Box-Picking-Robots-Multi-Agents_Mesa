@@ -107,7 +107,7 @@ server = mesa.visualization.ModularServer(
 )
 
 # Batch run
-""" def createPlot(results, dataValue, columns = []):
+def createPlot(results, dataValue, columns = []):
     results_df = pd.DataFrame(results)
     resultingDataFrame = pd.DataFrame(results_df, columns=[dataValue])
     print(resultingDataFrame)
@@ -125,7 +125,7 @@ if __name__ == '__main__':
             number_processes=None,
             data_collection_period=1,
             display_progress=True,
-    ) """
+    )
     
 """ results = mesa.batch_run(
     WarehouseModel,
@@ -143,4 +143,4 @@ plt.show() """
 
 
 server.port = 2005
-server.launch()
+#server.launch()
