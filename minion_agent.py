@@ -20,8 +20,6 @@ class MinionAgent(mesa.Agent):
     def randomMove(self):
         neighborCell = random.choice(self.model.grid.get_neighborhood(self.pos, False))
         if self.model.grid.is_cell_empty(neighborCell):
-            """ while not self.model.grid.is_cell_empty(neighborCell) and (not neighborCell == self.prevCell):
-            neighborCell = random.choice(self.model.grid.get_neighborhood(self.pos, False)) """
             self.model.grid.move_agent(self, neighborCell)
             self.prevCells = neighborCell
             self.randomSteps += 1

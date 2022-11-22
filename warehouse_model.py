@@ -16,7 +16,7 @@ class WarehouseModel(mesa.Model):
         self.rows = 21
         self.columns = 21
         hallwayWidth = 3
-        minions = 4
+        minions = 5
         self.time = time
         self.grid = mesa.space.MultiGrid(self.rows, self.columns, False)
         self.datacollector = mesa.DataCollector({
@@ -102,14 +102,15 @@ class WarehouseModel(mesa.Model):
 
     @staticmethod
     def boxesPerMinion(model, minion = 1) -> int: 
-        """ minion = [agent for agent in model.schedule.agents if type(agent) == MinionAgent][minion - 1]
-        return minion.boxesCount """
-        return 1
+        minion = [agent for agent in model.schedule.agents if type(agent) == MinionAgent][minion - 1]
+        return minion.boxesCount
 
     @staticmethod
     def percentagePiledBoxes(model) -> int: 
-        """ model.totalPiledBoxes = 0
-        stacks = [agent for agent in model.schedule.agents if type(agent) == StackAgent]
-        for stack in stacks:
-            model.totalPiledBoxes += stack.boxes
-        return (model.totalPiledBoxes * 100) / model.totalBoxes """
+        pilesPositions = []
+        for column in range(0, model.rows):
+            pilesPositions.append((column, model.rows))
+        print(pilesPositions)
+        print(pilesPositions[0])
+        model.grid.get_cell_list_contents([pilesPositions[0]])
+        return (10 * 100) / model.totalBoxes
