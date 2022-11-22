@@ -75,13 +75,40 @@ simulation_params = {
     )
 }
 
+# Charts
+minionMovements_random = ChartModule([{ "Label": "Minion Random Moves", "Color": "Blue" }], data_collector_name='datacollector')
+minionMovements_destination = ChartModule([ {"Label": "Minion Destination Movements", "Color": "Red" }], data_collector_name='datacollector')
+
 grid = CanvasGrid(agent_portrayal, 21, 21, PIXELS_GRID, PIXELS_GRID)
 
 server = mesa.visualization.ModularServer(
     WarehouseModel, [
-        grid], 
+        grid,
+        minionMovements_random,
+        minionMovements_destination], 
     "WarehouseModel", simulation_params
 )
 
 server.port = 2005
 server.launch()
+
+
+# Batch run
+def createPlot(results, dataValue, columns = []):
+    results_df = pd.DataFrame(results)
+    resultingDataFrame = pd.DataFrame(results_df, columns=[dataValue])
+    print(resultingDataFrame)
+    results_filtered = resultingDataFrame[(results_df.Step == 50)] # get last step resutls - TODO: CHANGE
+    results_filtered.plot('iteration', dataValue)
+
+""" results = mesa.batch_run(
+    WarehouseModel,
+    parameters={ "walls": 10, "boxes": 10, "time": 10 },
+    iterations=100,
+    max_steps=200,  # time
+    number_processes=1,
+    data_collection_period=1,
+    display_progress=True,
+) """
+
+# createPlot(results, 'Minion Random Moves', ['iteration', 'Minion Random Moves'])
