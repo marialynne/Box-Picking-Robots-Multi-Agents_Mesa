@@ -11,7 +11,7 @@ def agent_portrayal(agent):
     portrayal = {"Shape": "circle", "Filled": "true"}
 
     if agent.type == 4: # Stack
-        if agent.boxes >= 5: portrayal["Color"] = "sienna"
+        if agent.boxes <= 5: portrayal["Color"] = "sienna"
         else: portrayal["Color"] = "peru"
         portrayal["Shape"] = "rect"
         portrayal["Layer"] = 0
@@ -54,7 +54,7 @@ simulation_params = {
         "Number of boxes",
         value=5,
         min_value=1,
-        max_value=5,
+        max_value=25,
         step=1,
         description="Number of boxes",
     ),
@@ -63,7 +63,7 @@ simulation_params = {
         "Scanner Range of Vision",
         value=5,
         min_value=1,
-        max_value=5,
+        max_value=10,
         step=1,
         description="Number of Agents",
     ),
