@@ -12,5 +12,5 @@ class StackAgent(mesa.Agent):
         self.listBoxes.append(box)
       
     def step(self):
-        pass
+        return
 

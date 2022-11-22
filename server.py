@@ -104,13 +104,11 @@ server = mesa.visualization.ModularServer(
     "WarehouseModel", simulation_params
 )
 
-server.port = 2005
-#server.launch()
 
 
 # Batch run
 
-def createPlot(results, dataValue, columns = []):
+""" def createPlot(results, dataValue, columns = []):
     results_df = pd.DataFrame(results)
     resultingDataFrame = pd.DataFrame(results_df, columns=[dataValue])
     print(resultingDataFrame)
@@ -121,11 +119,17 @@ def createPlot(results, dataValue, columns = []):
 results = mesa.batch_run(
     WarehouseModel,
     parameters={ "walls": 15, "boxes": 10, "time": 500 , "visionRange": 5},
-    iterations=100,
-    max_steps=500,  # time
+    iterations=200,
+    max_steps=250,
     number_processes=1,
     data_collection_period=1,
     display_progress=True,
 ) 
 
+print(results)
+
 createPlot(results, 'Minion Random Moves', ['iteration', 'Minion Random Moves'])
+ """
+
+server.port = 2005
+server.launch()

@@ -65,7 +65,6 @@ class ScannerAgent(mesa.Agent):
     def move(self):
         if self.getToDestination(self.destinationList[self.index]): self.index+=1
     
-    
     def searchSurroundings(self):
         x,y = self.pos
         for i in range(1, self.visionRange + 1):

@@ -13,12 +13,12 @@ class WarehouseModel(mesa.Model):
         self.walls = walls
         self.boxes = boxes
         self.totalBoxes = boxes
-        rows = 21
-        columns = 21
+        self.rows = 21
+        self.columns = 21
         hallwayWidth = 3
         minions = 5
         self.time = time
-        self.grid = mesa.space.MultiGrid(rows, columns, False)
+        self.grid = mesa.space.MultiGrid(self.rows, self.columns, False)
         self.datacollector = mesa.DataCollector({
             "Scanner Agent Moves": WarehouseModel.mainRobotMovements,
             "Minion Random Moves": WarehouseModel.minionRandomMovements,
@@ -32,18 +32,18 @@ class WarehouseModel(mesa.Model):
         })
 
         #Add Scanner Agent
-        agent = ScannerAgent(self.next_id(), self, visionRange,(rows- hallwayWidth), columns)
+        agent = ScannerAgent(self.next_id(), self, visionRange,(self.rows- hallwayWidth), self.columns)
         self.addAgent(agent,10, 8)
 
         for _ in range(self.walls):
             agent = WallAgent(self.next_id(), self)
             emptyCell = self.grid.find_empty()
-            while (emptyCell[1] >= ((rows-1) - hallwayWidth)) and self.haveNeighbors(emptyCell):  emptyCell = self.grid.find_empty()
+            while (emptyCell[1] >= ((self.rows - 1) - hallwayWidth)) and self.haveNeighbors(emptyCell):  emptyCell = self.grid.find_empty()
             self.grid.place_agent(agent, emptyCell)
         
         for _ in range(self.boxes + minions):
             emptyCell = self.grid.find_empty()
-            while (emptyCell[1] >= ((rows-1) - hallwayWidth)):  emptyCell = self.grid.find_empty()
+            while (emptyCell[1] >= ((self.rows - 1) - hallwayWidth)):  emptyCell = self.grid.find_empty()
             if self.boxes > 0:
                 agent = BoxAgent(self.next_id(), self)
                 self.addAgent(agent,emptyCell[0],emptyCell[1])
@@ -52,9 +52,9 @@ class WarehouseModel(mesa.Model):
                 agent = MinionAgent(self.next_id(), self)
                 self.addAgent(agent,emptyCell[0],emptyCell[1])
         
-        for col in range(0,columns):
+        for col in range(0,self.columns):
             agent = StackAgent(self.next_id(), self)
-            self.addAgent(agent,col,rows-1)
+            self.addAgent(agent,col,self.rows - 1)
                 
     def addAgent(self, agent, row, col) -> None:
         self.schedule.add(agent)
