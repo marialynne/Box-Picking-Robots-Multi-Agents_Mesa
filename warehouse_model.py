@@ -18,6 +18,7 @@ class WarehouseModel(mesa.Model):
         hallwayWidth = 3
         minions = 5
         self.time = time
+        self.stacksDirections = []
         self.grid = mesa.space.MultiGrid(self.rows, self.columns, False)
         self.datacollector = mesa.DataCollector({
             "Scanner Agent Moves": WarehouseModel.mainRobotMovements,
@@ -38,6 +39,7 @@ class WarehouseModel(mesa.Model):
         for col in range(0,self.columns):
             agent = StackAgent(self.next_id(), self)
             self.addAgent(agent,col,self.rows - 1)
+            self.stacksDirections.append((col,self.rows - 1))
 
         for _ in range(self.walls):
             agent = WallAgent(self.next_id(), self)
@@ -106,11 +108,7 @@ class WarehouseModel(mesa.Model):
         return minion.boxesCount
 
     @staticmethod
-    def percentagePiledBoxes(model) -> int: 
-        pilesPositions = []
-        for column in range(0, model.rows):
-            pilesPositions.append((column, model.rows))
-        print(pilesPositions)
-        print(pilesPositions[0])
-        model.grid.get_cell_list_contents([pilesPositions[0]])
-        return (10 * 100) / model.totalBoxes
+    def percentagePiledBoxes(model) -> int:
+        numberOfBoxes = len([agent for agent in model.schedule.agents if type(agent) == BoxAgent])
+        numberOfBoxesInStacks = len([agent for agent in model.schedule.agents if type(agent) == BoxAgent and agent.pos in model.stacksDirections])
+        return (numberOfBoxesInStacks/numberOfBoxes) * 100
