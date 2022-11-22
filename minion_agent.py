@@ -13,18 +13,11 @@ class MinionAgent(mesa.Agent):
         self.box = None
         self.stepsToDestination = 0
         self.destination = None
+        self.goToPile = False
         self.randomSteps = 0
         self.destinationSteps = 0
         self.boxesCount = 0
-        self.index = 0
-        self.stacksDirections = []
-       
-    def getDestinations(self):
-        for y in range(0, self.model.rows):
-            for x in range(0, self.model.columns):
-                if (x == 0 and y == 20):
-                    self.stacksDirections.append((x,y))
-   
+
     def mantainPrevCells(self):
         while len(self.prevCells) >= 25:
             self.prevCells.pop()
@@ -41,49 +34,79 @@ class MinionAgent(mesa.Agent):
     def distanceBetweenPoints(self, point1, point2):
         return math.sqrt(pow((point2[0] - point1[0]), 2) + pow((point2[1] - point1[1]), 2))
 
-    def goToDestination(self, callback):
-        bestDistance = math.inf
+    def getToDestination(self, callback):
+        """ bestDistance = math.inf
         bestNeighbor = None
-        neighbors = [cell for cell in self.model.grid.get_neighborhood(self.pos, False) if self.model.grid.is_cell_empty(cell)]
+        neighbors = neighbors = self.model.grid.get_neighborhood(self.pos, False)
+        if self.destination in neighbors: callback()
         for neighbor in neighbors:
-            distance = self.distanceBetweenPoints(neighbor, self.destination)
-            if (distance <= bestDistance) and (not neighbor == self.prevCell): 
-                bestDistance = distance
-                bestNeighbor = neighbor
+            if self.model.grid.is_cell_empty(neighbor) and (not neighbor == self.prevCell):
+                distance = self.distanceBetweenPoints(neighbor, self.destination)
+                if (distance <= bestDistance): 
+                    bestDistance = distance
+                    bestNeighbor = neighbor
         self.prevCell = self.pos
-        if bestNeighbor: 
-            self.model.grid.move_agent(self, bestNeighbor)
-            agent = self.model.grid.get_neighborhood(self.pos, False)
-            if self.destination in agent: callback()
-        
+        self.model.grid.move_agent(self, bestNeighbor) """
+        print('INSIDE DESTINATION', self, self.pos)
+        neighbors = self.model.grid.get_neighborhood(self.pos, False)
+        if self.destination in neighbors: return callback()
+        bestPoint = None
+        bestDistance = math.inf
+        for neighbor in neighbors:
+            print('FOR NEIGHBOR')
+            if self.model.grid.is_cell_empty(neighbor) and (not neighbor == self.prevCell):
+                distance = self.distanceBetweenPoints(self.destination, neighbor)
+                if distance < bestDistance:
+                    bestDistance = distance
+                    bestPoint = neighbor
+        if (bestDistance == math.inf):
+            self.prevCell = None
+        else:
+            self.prevCell = self.pos
+            print('DESTINATION FOUND PATH 1', self, bestPoint)
+            self.model.grid.move_agent(self, bestPoint)
+            print('DESTINATION FOUND PATH 2', self, bestPoint)
+            return
+
+
     def setDestination(self, destination):
         self.destination = destination
 
     def pickBox(self):
-        self.box = self.model.grid.get_cell_list_contents([self.destination])
-        if len(self.box) <= 0:
-            self.box = None
-            self.destination = None
-            return 
-        self.boxesCount += 1
-        self.model.grid.remove_agent(self.box[0])
-    
+        print('PICK BOX')
+        box = self.model.grid.get_cell_list_contents([self.destination])
+        if len(box) > 0 and type(box[0]) == BoxAgent:
+            self.box = box[0]
+            self.model.grid.remove_agent(self.box)
+            self.destination = (0, self.model.rows - 1)
+            self.boxesCount += 1
+        else: self.destination = None
+
+    def getPile(self):
+        print('GET PILE')
+        while len(self.model.grid.get_cell_list_contents([self.destination])) >= 5:
+            self.destination = (self.destination[0] + 1, self.destination[1])
+        self.goToPile = True
+
     def pileBox(self):
-        print(self.box.pos)
-        self.model.grid.place_agent(self.box, self.stacksDirections[self.index])
-        self.box = None 
-        self.destination = None
-        
-    def step(self):
-        self.getDestinations()
-        if not self.destination: self.randomMove()
+        print('PILING')
+        if self.box != None:
+            self.model.grid.place_agent(self.box, self.destination)
+            self.box = None
+            self.prevCells = []
+            self.destination = None
+            self.goToPile = False
         else:
-            if not self.box: 
-                self.goToDestination(self.pickBox)
-            else:
-                self.destination = self.stacksDirections[self.index]
-                self.goToDestination(self.pileBox)
-                
-        mates = self.model.grid.get_cell_list_contents([self.stacksDirections[self.index]])        
-        if len(mates) >= 6:
-            self.index += 1
+            self.goToPile = False
+            self.destination = None
+
+    def step(self):
+        if not self.destination: 
+            self.randomMove()
+        else:
+            if not self.box: self.getToDestination(self.pickBox)
+            elif self.box and self.goToPile: self.getToDestination(self.pileBox)
+            elif self.box: 
+                # print(self, self.pos)
+                self.getToDestination(self.getPile)
+        pass

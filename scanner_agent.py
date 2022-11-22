@@ -16,7 +16,7 @@ class ScannerAgent(mesa.Agent):
         self.foundBoxes = []
         self.movements = 0
         self.destinationList = []
-        self.prevCells = []
+        self.prevCell = []
         self.stepsToDestination = 0
         self.arrived = False
         self.index = 0
@@ -44,26 +44,34 @@ class ScannerAgent(mesa.Agent):
         return math.sqrt(pow((point2[0] - point1[0]), 2) + pow((point2[1] - point1[1]), 2))
 
     def getToDestination(self, destination):
+        print('SCANNER DESTINATION')
         neighbors = self.model.grid.get_neighborhood(self.pos, False)
-        if destination in neighbors: return True
+        if destination in neighbors: 
+            print('SCANNER FOUND DESTINATION')
+            self.arrived = True
+            return
         bestPoint = None
-        bestDistance = -1
+        bestDistance = math.inf
         for neighbor in neighbors:
-            if self.model.grid.is_cell_empty(neighbor) and (not neighbor in self.prevCells) and neighbor[1] <= 19:
+            print('SCANNER FOR')
+            if self.model.grid.is_cell_empty(neighbor) and (not neighbor == self.prevCell):
                 distance = self.distanceBetweenPoints(destination, neighbor)
-                if distance < bestDistance or bestDistance < 0:
+                if distance < bestDistance:
                     bestDistance = distance
                     bestPoint = neighbor
-        if (bestDistance < 0): 
-            if len(self.prevCells) > 0: self.prevCells = [self.prevCells[-1]]
+        if (bestDistance == math.inf):
+            self.prevCell = None
         else:
-            self.prevCells.append(bestPoint)
-            self.stepsToDestination += 1
+            print('SCANNER PATH')
+            self.prevCell = self.pos
             self.model.grid.move_agent(self, bestPoint)
-        return False
+        return
     
     def move(self):
-        if self.getToDestination(self.destinationList[self.index]): self.index+=1
+        if self.arrived: 
+            self.index += 1
+            self.arrived = False
+        else: self.getToDestination(self.destinationList[self.index])
     
     def searchSurroundings(self):
         x,y = self.pos
