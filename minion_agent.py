@@ -14,6 +14,7 @@ class MinionAgent(mesa.Agent):
         self.destination = None
         self.randomSteps = 0
         self.destinationSteps = 0
+        self.boxesCount = 0
 
     def mantainPrevCells(self):
         while len(self.prevCells) >= 25:
@@ -62,6 +63,7 @@ class MinionAgent(mesa.Agent):
             self.model.grid.remove_agent(box)
             self.destination = (0, 20)
             self.stepsToDestination = 0
+            self.boxesCount += 1
 
     def pileBox(self):
         while len(self.model.grid.get_cell_list_contents([self.destination])) >= 5:

@@ -21,6 +21,11 @@ class WarehouseModel(mesa.Model):
         self.datacollector = mesa.DataCollector({
             "Minion Random Moves": WarehouseModel.minionRandomMovements,
             "Minion Destination Movements": WarehouseModel.minionDestinationMovements,
+            "Minion 1 Total Piled Boxes": lambda model: WarehouseModel.boxesPerMinion(model),
+            "Minion 2 Total Piled Boxes": lambda model: WarehouseModel.boxesPerMinion(model, 2),
+            "Minion 3 Total Piled Boxes": lambda model: WarehouseModel.boxesPerMinion(model, 3),
+            "Minion 4 Total Piled Boxes": lambda model: WarehouseModel.boxesPerMinion(model, 4),
+            "Minion 5 Total Piled Boxes": lambda model: WarehouseModel.boxesPerMinion(model, 5),
         })
 
         # Add only one minion
@@ -104,7 +109,8 @@ class WarehouseModel(mesa.Model):
 
     @staticmethod
     def boxesPerMinion(model, minion = 1) -> int: 
-        return 1
+        minion = [agent for agent in model.schedule.agents if type(agent) == MinionAgent][minion]
+        return minion.boxesCount
 
     @staticmethod
     def percentagePiledBoxes(model) -> int: 
