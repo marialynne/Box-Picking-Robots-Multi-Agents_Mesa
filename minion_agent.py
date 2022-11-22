@@ -12,6 +12,9 @@ class MinionAgent(mesa.Agent):
         self.box = None
         self.stepsToDestination = 0
         self.destination = None
+        self.randomSteps = 0
+        self.destinationSteps = 0
+        self.boxesCount = 0
 
     def mantainPrevCells(self):
         while len(self.prevCells) >= 25:
@@ -24,6 +27,7 @@ class MinionAgent(mesa.Agent):
         self.prevCells.append(neighborCell)
         self.model.grid.move_agent(self, neighborCell)
         self.mantainPrevCells()
+        self.randomSteps += 1
     
     def distanceBetweenPoints(self, point1, point2):
         return math.sqrt(pow((point2[0] - point1[0]), 2) + pow((point2[1] - point1[1]), 2))
@@ -42,6 +46,7 @@ class MinionAgent(mesa.Agent):
         if (bestDistance < 0): 
             if len(self.prevCells) > 0: self.prevCells = [self.prevCells[-1]]
         else:
+            self.destinationSteps += 1
             self.prevCells.append(bestPoint)
             self.stepsToDestination += 1
             self.model.grid.move_agent(self, bestPoint)
@@ -58,6 +63,7 @@ class MinionAgent(mesa.Agent):
             self.model.grid.remove_agent(box)
             self.destination = (0, 20)
             self.stepsToDestination = 0
+            self.boxesCount += 1
 
     def pileBox(self):
         while len(self.model.grid.get_cell_list_contents([self.destination])) >= 5:

@@ -21,6 +21,15 @@ class WarehouseModel(mesa.Model):
         self.grid = mesa.space.MultiGrid(rows, columns, False)
         # agentTypes = [WallAgent, WallAgent, BoxAgent, BoxAgent, BoxAgent]
         agentTypes = [WallAgent, WallAgent, WallAgent, WallAgent]
+        self.datacollector = mesa.DataCollector({
+            "Minion Random Moves": WarehouseModel.minionRandomMovements,
+            "Minion Destination Movements": WarehouseModel.minionDestinationMovements,
+            "Minion 1 Total Piled Boxes": lambda model: WarehouseModel.boxesPerMinion(model),
+            "Minion 2 Total Piled Boxes": lambda model: WarehouseModel.boxesPerMinion(model, 2),
+            "Minion 3 Total Piled Boxes": lambda model: WarehouseModel.boxesPerMinion(model, 3),
+            "Minion 4 Total Piled Boxes": lambda model: WarehouseModel.boxesPerMinion(model, 4),
+            "Minion 5 Total Piled Boxes": lambda model: WarehouseModel.boxesPerMinion(model, 5),
+        })
 
         #Add Scanner Agent
         agent = ScannerAgent(self.next_id(), visionRange, self)
@@ -68,3 +77,35 @@ class WarehouseModel(mesa.Model):
 
     def step(self):
         self.schedule.step()
+        self.datacollector.collect(self)
+
+    @staticmethod
+    def mainRobotMovements(model) -> int: # See if it works with main robot
+        #mainRobot = [agent for agent in model.schedule.agents if type(agent) == MainRobotAgent]
+        #return mainRobot.steps
+        return
+
+    @staticmethod
+    def minionRandomMovements(model) -> int: 
+        minions = [agent for agent in model.schedule.agents if type(agent) == MinionAgent]
+        totalRandomSteps = 0
+        for minion in minions:
+            totalRandomSteps += minion.randomSteps 
+        return totalRandomSteps
+
+    @staticmethod
+    def minionDestinationMovements(model) -> int:
+        minions = [agent for agent in model.schedule.agents if type(agent) == MinionAgent]
+        totalDestinationSteps = 0
+        for minion in minions:
+            totalDestinationSteps += minion.destinationSteps
+        return totalDestinationSteps
+
+    @staticmethod
+    def boxesPerMinion(model, minion = 1) -> int: 
+        minion = [agent for agent in model.schedule.agents if type(agent) == MinionAgent][minion]
+        return minion.boxesCount
+
+    @staticmethod
+    def percentagePiledBoxes(model) -> int: 
+        return 1
