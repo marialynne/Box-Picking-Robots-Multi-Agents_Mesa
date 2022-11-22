@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from warehouse_model import WarehouseModel
 from mesa.visualization.UserParam import UserSettableParameter
 from mesa.visualization.modules import ChartModule, CanvasGrid
+from multiprocessing import freeze_support
 PIXELS_GRID = 600
 
 def agent_portrayal(agent):
@@ -113,21 +114,32 @@ def createPlot(results, dataValue, columns = []):
     results_filtered = resultingDataFrame[(results_df.Step == 50)] # get last step resutls - TODO: CHANGE
     results_filtered.plot('iteration', dataValue)
     plt.show()
+
+if __name__ == '__main__':
+    freeze_support()
+    results = mesa.batch_run(
+            WarehouseModel,
+            parameters={ "walls": range(3, 25), "boxes": range(5, 20), "time": 200 , "visionRange": range(3, 5)},
+            iterations=5,
+            max_steps=100,
+            number_processes=None,
+            data_collection_period=1,
+            display_progress=True,
+    )
     
-results = mesa.batch_run(
+""" results = mesa.batch_run(
     WarehouseModel,
     parameters={ "walls": range(3, 25), "boxes": range(5, 20), "time": 200 , "visionRange": range(3, 5)},
     iterations=10,
     max_steps=250,
     number_processes=1,
-    data_collection_period=1,
     display_progress=True,
-) 
+)  """
 
-print(results)
+# print(results)
 
-createPlot(results, 'Minion Random Moves', ['iteration', 'Minion Random Moves'])
-plt.show()
+""" createPlot(results, 'Minion Random Moves', ['iteration', 'Minion Random Moves'])
+plt.show() """
 
 
 server.port = 2005

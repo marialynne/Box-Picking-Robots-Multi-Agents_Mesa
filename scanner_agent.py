@@ -44,16 +44,13 @@ class ScannerAgent(mesa.Agent):
         return math.sqrt(pow((point2[0] - point1[0]), 2) + pow((point2[1] - point1[1]), 2))
 
     def getToDestination(self, destination):
-        print('SCANNER DESTINATION')
         neighbors = self.model.grid.get_neighborhood(self.pos, False)
         if destination in neighbors: 
-            print('SCANNER FOUND DESTINATION')
             self.arrived = True
             return
         bestPoint = None
         bestDistance = math.inf
         for neighbor in neighbors:
-            print('SCANNER FOR')
             if self.model.grid.is_cell_empty(neighbor) and (not neighbor == self.prevCell):
                 distance = self.distanceBetweenPoints(destination, neighbor)
                 if distance < bestDistance:
@@ -62,7 +59,6 @@ class ScannerAgent(mesa.Agent):
         if (bestDistance == math.inf):
             self.prevCell = None
         else:
-            print('SCANNER PATH')
             self.prevCell = self.pos
             self.model.grid.move_agent(self, bestPoint)
         return
@@ -75,7 +71,8 @@ class ScannerAgent(mesa.Agent):
     
     def searchSurroundings(self):
         x,y = self.pos
-        for i in range(1, self.visionRange + 1):
+        
+        """ for i in range(1, self.visionRange + 1):
             if x + i <= 20:
                 currentCell = (x + i, y)
                 cellmates = self.model.grid.get_cell_list_contents(currentCell)
@@ -87,9 +84,9 @@ class ScannerAgent(mesa.Agent):
                         i += 21
                         break
             else:
-                break
+                break """
 
-        for i in range(1, self.visionRange + 1):
+        """ for i in range(1, self.visionRange + 1):
             if x - i >= 0:
                 currentCell = (x - i, y)
                 cellmates = self.model.grid.get_cell_list_contents(currentCell)
@@ -101,9 +98,9 @@ class ScannerAgent(mesa.Agent):
                         i == -1
                         break
             else:
-                break
+                break """
 
-        for i in range(1, self.visionRange + 1):
+        """ for i in range(1, self.visionRange + 1):
             if y + i <= 20:
                 currentCell = (x, y + i)
                 cellmates = self.model.grid.get_cell_list_contents(currentCell)
@@ -115,9 +112,9 @@ class ScannerAgent(mesa.Agent):
                         i += 21
                         break
             else:
-                break
+                break """
         
-        for i in range(1, self.visionRange + 1):
+        """ for i in range(1, self.visionRange + 1):
             if y - i >= 0:
                 currentCell = (x, y - i)
                 cellmates = self.model.grid.get_cell_list_contents(currentCell)
@@ -129,7 +126,7 @@ class ScannerAgent(mesa.Agent):
                         i == -1
                         break
             else:
-                break
+                break """
     
     def assingBox(self):
         minions = [agent for agent in self.model.schedule.agents if type(agent) == MinionAgent]

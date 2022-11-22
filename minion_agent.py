@@ -47,13 +47,11 @@ class MinionAgent(mesa.Agent):
                     bestNeighbor = neighbor
         self.prevCell = self.pos
         self.model.grid.move_agent(self, bestNeighbor) """
-        print('INSIDE DESTINATION', self, self.pos)
         neighbors = self.model.grid.get_neighborhood(self.pos, False)
         if self.destination in neighbors: return callback()
         bestPoint = None
         bestDistance = math.inf
         for neighbor in neighbors:
-            print('FOR NEIGHBOR')
             if self.model.grid.is_cell_empty(neighbor) and (not neighbor == self.prevCell):
                 distance = self.distanceBetweenPoints(self.destination, neighbor)
                 if distance < bestDistance:
@@ -63,9 +61,7 @@ class MinionAgent(mesa.Agent):
             self.prevCell = None
         else:
             self.prevCell = self.pos
-            print('DESTINATION FOUND PATH 1', self, bestPoint)
             self.model.grid.move_agent(self, bestPoint)
-            print('DESTINATION FOUND PATH 2', self, bestPoint)
             return
 
 
@@ -73,7 +69,6 @@ class MinionAgent(mesa.Agent):
         self.destination = destination
 
     def pickBox(self):
-        print('PICK BOX')
         box = self.model.grid.get_cell_list_contents([self.destination])
         if len(box) > 0 and type(box[0]) == BoxAgent:
             self.box = box[0]
@@ -83,13 +78,11 @@ class MinionAgent(mesa.Agent):
         else: self.destination = None
 
     def getPile(self):
-        print('GET PILE')
         while len(self.model.grid.get_cell_list_contents([self.destination])) >= 5:
             self.destination = (self.destination[0] + 1, self.destination[1])
         self.goToPile = True
 
     def pileBox(self):
-        print('PILING')
         if self.box != None:
             self.model.grid.place_agent(self.box, self.destination)
             self.box = None
@@ -107,6 +100,5 @@ class MinionAgent(mesa.Agent):
             if not self.box: self.getToDestination(self.pickBox)
             elif self.box and self.goToPile: self.getToDestination(self.pileBox)
             elif self.box: 
-                # print(self, self.pos)
                 self.getToDestination(self.getPile)
         pass
