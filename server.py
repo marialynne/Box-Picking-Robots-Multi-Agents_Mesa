@@ -7,7 +7,11 @@ PIXELS_GRID = 500
 
 def agent_portrayal(agent):
     portrayal = {"Shape": "circle", "Filled": "true"}
-    if agent.type == 2: # Robot
+    if agent.type == 3:
+        portrayal["Color"] = "red"
+        portrayal["Layer"] = 2
+        portrayal["r"] = 0.8
+    elif agent.type == 2: # Robot
         portrayal["Color"] = "blue"
         portrayal["Layer"] = 1
         portrayal["r"] = 0.8
@@ -35,6 +39,15 @@ simulation_params = {
         step=1,
         description="Number of Agents",
     ),
+    "visionRange": UserSettableParameter(
+        "slider",
+        "Scanner Range of Vision",
+        value=5,
+        min_value=1,
+        max_value=5,
+        step=1,
+        description="Number of Agents",
+    ),
     "time": UserSettableParameter(
         "number",
         "Time",
@@ -51,5 +64,5 @@ server = mesa.visualization.ModularServer(
         grid], "Bootleg", simulation_params
 )
 
-server.port = 853
+server.port = 2005
 server.launch()

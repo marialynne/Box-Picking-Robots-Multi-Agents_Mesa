@@ -4,9 +4,10 @@ import random
 from wall_agent import WallAgent
 from box_agent import BoxAgent
 from minion_agent import MinionAgent
+from scanner_agent import ScannerAgent
 
 class WarehouseModel(mesa.Model):     
-    def __init__(self, agents, time):
+    def __init__(self, agents, visionRange, time):
         self.schedule = mesa.time.RandomActivationByType(self)
         self.running = True
         self.agents = agents
@@ -18,14 +19,20 @@ class WarehouseModel(mesa.Model):
         # agentTypes = [WallAgent, WallAgent, BoxAgent, BoxAgent, BoxAgent]
         agentTypes = [WallAgent, WallAgent, WallAgent, WallAgent]
 
+        #Add Scanner Agent
+        agent = ScannerAgent(self.id, visionRange, self)
+        self.schedule.add(agent)
+        self.grid.place_agent(agent, (20, 19))
+        self.id += 1
+
         # Add only one minion
-        agent = MinionAgent(self.id, self)
+        '''agent = MinionAgent(self.id, self)
         agent.setDestination((15, 18))
         self.schedule.add(agent)
         self.grid.place_agent(agent, (0, 0))
         self.id += 1
         agent = MinionAgent(self.id, self)
-        agent.setDestination((10, 10))
+        agent.setDestination((12, 12))
         self.schedule.add(agent)
         self.grid.place_agent(agent, (0, 0))
         self.id += 1
@@ -38,7 +45,7 @@ class WarehouseModel(mesa.Model):
         agent.setDestination((5, 8))
         self.schedule.add(agent)
         self.grid.place_agent(agent, (0, 0))
-        self.id += 1
+        self.id += 1'''
         
         agent = BoxAgent(self.id, self)
         self.schedule.add(agent)
@@ -46,7 +53,7 @@ class WarehouseModel(mesa.Model):
         self.id += 1
         agent = BoxAgent(self.id, self)
         self.schedule.add(agent)
-        self.grid.place_agent(agent, (10, 10))
+        self.grid.place_agent(agent, (12, 12))
         self.id += 1
         agent = BoxAgent(self.id, self)
         self.schedule.add(agent)
@@ -61,7 +68,7 @@ class WarehouseModel(mesa.Model):
         for _ in range(self.agents):
             index = random.randrange(len(agentTypes))
             agent = agentTypes[index](self.id, self)
-            if type(agent) == MinionAgent: agent.setDestination((10, 10))
+            if type(agent) == MinionAgent: agent.setDestination((12, 12))
             self.schedule.add(agent)
             emptyCell = self.grid.find_empty()
             while emptyCell[1] >= 18: emptyCell = self.grid.find_empty()
