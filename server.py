@@ -12,8 +12,9 @@ def agent_portrayal(agent):
     portrayal = {"Shape": "circle", "Filled": "true"}
 
     if agent.type == 4: # Stack
-        if agent.boxes < 5: portrayal["Color"] = "sienna"
-        else: portrayal["Color"] = "peru"
+        #if agent.boxes < 5: 
+        #else: portrayal["Color"] = "peru"
+        portrayal["Color"] = "sienna"
         portrayal["Shape"] = "rect"
         portrayal["Layer"] = 0
         portrayal["h"] = 1
@@ -53,7 +54,7 @@ simulation_params = {
     "boxes": UserSettableParameter(
         "slider",
         "Number of boxes",
-        value=5,
+        value=1,
         min_value=5,
         max_value=25,
         step=1,

@@ -16,7 +16,7 @@ class WarehouseModel(mesa.Model):
         self.rows = 21
         self.columns = 21
         hallwayWidth = 3
-        minions = 5
+        minions = 4
         self.time = time
         self.grid = mesa.space.MultiGrid(self.rows, self.columns, False)
         self.datacollector = mesa.DataCollector({
@@ -33,7 +33,11 @@ class WarehouseModel(mesa.Model):
 
         #Add Scanner Agent
         agent = ScannerAgent(self.next_id(), self, visionRange,(self.rows- hallwayWidth), self.columns)
-        self.addAgent(agent,10, 8)
+        self.addAgent(agent, 10, 8)
+        
+        for col in range(0,self.columns):
+            agent = StackAgent(self.next_id(), self)
+            self.addAgent(agent,col,self.rows - 1)
 
         for _ in range(self.walls):
             agent = WallAgent(self.next_id(), self)
@@ -52,9 +56,6 @@ class WarehouseModel(mesa.Model):
                 agent = MinionAgent(self.next_id(), self)
                 self.addAgent(agent,emptyCell[0],emptyCell[1])
         
-        for col in range(0,self.columns):
-            agent = StackAgent(self.next_id(), self)
-            self.addAgent(agent,col,self.rows - 1)
                 
     def addAgent(self, agent, row, col) -> None:
         self.schedule.add(agent)
@@ -101,13 +102,14 @@ class WarehouseModel(mesa.Model):
 
     @staticmethod
     def boxesPerMinion(model, minion = 1) -> int: 
-        minion = [agent for agent in model.schedule.agents if type(agent) == MinionAgent][minion - 1]
-        return minion.boxesCount
+        """ minion = [agent for agent in model.schedule.agents if type(agent) == MinionAgent][minion - 1]
+        return minion.boxesCount """
+        return 1
 
     @staticmethod
     def percentagePiledBoxes(model) -> int: 
-        model.totalPiledBoxes = 0
+        """ model.totalPiledBoxes = 0
         stacks = [agent for agent in model.schedule.agents if type(agent) == StackAgent]
         for stack in stacks:
             model.totalPiledBoxes += stack.boxes
-        return (model.totalPiledBoxes * 100) / model.totalBoxes
+        return (model.totalPiledBoxes * 100) / model.totalBoxes """

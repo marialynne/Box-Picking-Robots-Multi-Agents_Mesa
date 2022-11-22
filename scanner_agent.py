@@ -137,5 +137,4 @@ class ScannerAgent(mesa.Agent):
         self.searchSurroundings()
         if(len(self.foundBoxes) > 0): self.assingBox()
         self.movements += 1
-        pass
     
