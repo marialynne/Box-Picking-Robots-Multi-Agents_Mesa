@@ -9,15 +9,11 @@ PIXELS_GRID = 600
 
 def agent_portrayal(agent):
     portrayal = {"Shape": "circle", "Filled": "true"}
-    if agent.type == 5: # Stack
+
+    if agent.type == 4: # Stack
+        if agent.boxes >= 5: portrayal["Color"] = "sienna"
+        else: portrayal["Color"] = "peru"
         portrayal["Shape"] = "rect"
-        portrayal["Color"] = "sienna"
-        portrayal["Layer"] = 0
-        portrayal["h"] = 1
-        portrayal["w"] = 1
-    elif agent.type == 4: # Empty Stack
-        portrayal["Shape"] = "rect"
-        portrayal["Color"] = "peru"
         portrayal["Layer"] = 0
         portrayal["h"] = 1
         portrayal["w"] = 1
