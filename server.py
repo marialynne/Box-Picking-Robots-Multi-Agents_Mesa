@@ -55,7 +55,7 @@ simulation_params = {
     "boxes": UserSettableParameter(
         "slider",
         "Number of boxes",
-        value=1,
+        value=10,
         min_value=5,
         max_value=25,
         step=1,
