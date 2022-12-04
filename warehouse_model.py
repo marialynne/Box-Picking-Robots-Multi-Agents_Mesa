@@ -5,7 +5,8 @@ from minion_agent import MinionAgent
 from stack_agent import StackAgent
 from scanner_agent import ScannerAgent
 
-class WarehouseModel(mesa.Model):     
+
+class WarehouseModel(mesa.Model):
     def __init__(self, walls, boxes, visionRange, time):
         self.schedule = mesa.time.RandomActivationByType(self)
         self.running = True
@@ -32,47 +33,52 @@ class WarehouseModel(mesa.Model):
             "Percentage piled boxes": WarehouseModel.percentagePiledBoxes,
         })
 
-        #Add Scanner Agent
-        agent = ScannerAgent(self.next_id(), self, visionRange,(self.rows- hallwayWidth), self.columns)
+        # Add Scanner Agent
+        agent = ScannerAgent(self.next_id(), self, visionRange,
+                             (self.rows - hallwayWidth), self.columns)
         self.addAgent(agent, 10, 8)
-        
-        for col in range(0,self.columns):
+
+        for col in range(0, self.columns):
             agent = StackAgent(self.next_id(), self)
-            self.addAgent(agent,col,self.rows - 1)
-            self.stacksDirections.append((col,self.rows - 1))
+            self.addAgent(agent, col, self.rows - 1)
+            self.stacksDirections.append((col, self.rows - 1))
 
         for _ in range(self.walls):
             agent = WallAgent(self.next_id(), self)
             emptyCell = self.grid.find_empty()
-            while (emptyCell[1] >= ((self.rows - 1) - hallwayWidth)) and self.haveNeighbors(emptyCell):  emptyCell = self.grid.find_empty()
+            while (emptyCell[1] >= ((self.rows - 1) - hallwayWidth)) and self.haveNeighbors(emptyCell):
+                emptyCell = self.grid.find_empty()
             self.grid.place_agent(agent, emptyCell)
-        
+
         for _ in range(self.boxes + minions):
             emptyCell = self.grid.find_empty()
-            while (emptyCell[1] >= ((self.rows - 1) - hallwayWidth)):  emptyCell = self.grid.find_empty()
+            while (emptyCell[1] >= ((self.rows - 1) - hallwayWidth)):
+                emptyCell = self.grid.find_empty()
             if self.boxes > 0:
                 agent = BoxAgent(self.next_id(), self)
-                self.addAgent(agent,emptyCell[0],emptyCell[1])
-                self.boxes-=1
+                self.addAgent(agent, emptyCell[0], emptyCell[1])
+                self.boxes -= 1
             else:
                 agent = MinionAgent(self.next_id(), self)
-                self.addAgent(agent,emptyCell[0],emptyCell[1])
-        
-                
+                self.addAgent(agent, emptyCell[0], emptyCell[1])
+
     def addAgent(self, agent, row, col) -> None:
         self.schedule.add(agent)
-        self.grid.place_agent(agent,(row, col))
-    
+        self.grid.place_agent(agent, (row, col))
+
     def haveNeighbors(self, emptyCell):
         neighbors = self.grid.get_neighborhood(emptyCell, True)
-        hasNeighbor = filter(lambda cell: not self.grid.is_cell_empty(cell), neighbors)
-        if len(list(hasNeighbor)) == 0: return True
-        else: return False
-    
+        hasNeighbor = filter(
+            lambda cell: not self.grid.is_cell_empty(cell), neighbors)
+        if len(list(hasNeighbor)) == 0:
+            return True
+        else:
+            return False
+
     def run_model(self) -> None:
         while self.running:
             self.step()
-            
+
     def next_id(self) -> int:
         self.current_id += 1
         return self.current_id
@@ -82,33 +88,39 @@ class WarehouseModel(mesa.Model):
         self.datacollector.collect(self)
 
     @staticmethod
-    def mainRobotMovements(model) -> int: # See if it works with main robot
-        scannerAgent = [agent for agent in model.schedule.agents if type(agent) == ScannerAgent]
+    def mainRobotMovements(model) -> int:  # See if it works with main robot
+        scannerAgent = [agent for agent in model.schedule.agents if type(
+            agent) == ScannerAgent]
         return scannerAgent[0].movements if len(scannerAgent) > 0 else 0
 
     @staticmethod
-    def minionRandomMovements(model) -> int: 
-        minions = [agent for agent in model.schedule.agents if type(agent) == MinionAgent]
+    def minionRandomMovements(model) -> int:
+        minions = [agent for agent in model.schedule.agents if type(
+            agent) == MinionAgent]
         totalRandomSteps = 0
         for minion in minions:
-            totalRandomSteps += minion.randomSteps 
+            totalRandomSteps += minion.randomSteps
         return totalRandomSteps
 
     @staticmethod
     def minionDestinationMovements(model) -> int:
-        minions = [agent for agent in model.schedule.agents if type(agent) == MinionAgent]
+        minions = [agent for agent in model.schedule.agents if type(
+            agent) == MinionAgent]
         totalDestinationSteps = 0
         for minion in minions:
             totalDestinationSteps += minion.destinationSteps
         return totalDestinationSteps
 
     @staticmethod
-    def boxesPerMinion(model, minion = 1) -> int: 
-        minion = [agent for agent in model.schedule.agents if type(agent) == MinionAgent][minion - 1]
+    def boxesPerMinion(model, minion=1) -> int:
+        minion = [agent for agent in model.schedule.agents if type(
+            agent) == MinionAgent][minion - 1]
         return minion.boxesCount
 
     @staticmethod
     def percentagePiledBoxes(model) -> int:
-        numberOfBoxes = len([agent for agent in model.schedule.agents if type(agent) == BoxAgent])
-        numberOfBoxesInStacks = len([agent for agent in model.schedule.agents if type(agent) == BoxAgent and agent.pos in model.stacksDirections])
+        numberOfBoxes = len(
+            [agent for agent in model.schedule.agents if type(agent) == BoxAgent])
+        numberOfBoxesInStacks = len([agent for agent in model.schedule.agents if type(
+            agent) == BoxAgent and agent.pos in model.stacksDirections])
         return (numberOfBoxesInStacks/numberOfBoxes) * 100

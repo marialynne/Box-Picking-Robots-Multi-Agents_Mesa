@@ -6,7 +6,8 @@ from box_agent import BoxAgent
 from wall_agent import WallAgent
 from minion_agent import MinionAgent
 
-class ScannerAgent(mesa.Agent):     
+
+class ScannerAgent(mesa.Agent):
     def __init__(self, unique_id, model, visionRange, rows, columns):
         super().__init__(unique_id, model)
         self.type = 3
@@ -24,25 +25,26 @@ class ScannerAgent(mesa.Agent):
     def getDestinations(self):
         for y in range(0, self.rows):
             for x in range(0, self.columns):
-                if ((x == 0) or (x == self.columns-1) or (y == 0) or (y == self.rows)) and self.model.grid.is_cell_empty((x,y)): 
-                    self.destinationList.append((x,y))
-        
+                if ((x == 0) or (x == self.columns-1) or (y == 0) or (y == self.rows)) and self.model.grid.is_cell_empty((x, y)):
+                    self.destinationList.append((x, y))
+
         random.shuffle(self.destinationList)
-        for index,value in enumerate(self.destinationList):
-            if index%2 != 0: self.destinationList.insert(index,(10,8))
+        for index, value in enumerate(self.destinationList):
+            if index % 2 != 0:
+                self.destinationList.insert(index, (10, 8))
 
     def checkIfFound(self, currentCell):
         for i in range(0, len(self.foundBoxes)):
             if currentCell == self.foundBoxes[i]:
                 return True
         return False
-    
+
     def distanceBetweenPoints(self, point1, point2):
         return math.sqrt(pow((point2[0] - point1[0]), 2) + pow((point2[1] - point1[1]), 2))
 
     def getToDestination(self, destination):
         neighbors = self.model.grid.get_neighborhood(self.pos, False)
-        if destination in neighbors: 
+        if destination in neighbors:
             self.arrived = True
             return
         bestPoint = None
@@ -59,28 +61,33 @@ class ScannerAgent(mesa.Agent):
             self.prevCell = self.pos
             self.model.grid.move_agent(self, bestPoint)
         return
-    
+
     def move(self):
-        if self.arrived: 
+        if self.arrived:
             self.index += 1
             self.arrived = False
-        else: self.getToDestination(self.destinationList[self.index])
+        else:
+            self.getToDestination(self.destinationList[self.index])
 
     def outOfBounds(self, position):
-        if position[0] >= self.model.columns: return True
-        if position[0] < 0: return True
-        if position[1] >= self.model.rows: return True
-        if position[1] < 0: return True
+        if position[0] >= self.model.columns:
+            return True
+        if position[0] < 0:
+            return True
+        if position[1] >= self.model.rows:
+            return True
+        if position[1] < 0:
+            return True
         return False
 
     def getFieldView(self, cells):
         if len(cells) > 0:
             index = 0
-            while(index < len(cells) and type(cells[index]) != WallAgent):
+            while (index < len(cells) and type(cells[index]) != WallAgent):
                 if type(cells[index]) == BoxAgent and not cells[index] in self.foundBoxes:
                     self.foundBoxes.append(cells[index].pos)
                 index += 1
-        
+
     def searchSurroundings(self):
         northCells = []
         eastCells = []
@@ -91,26 +98,32 @@ class ScannerAgent(mesa.Agent):
             eastCell = (self.pos[0] + index, self.pos[1])
             westCell = (self.pos[0] - index, self.pos[1])
             southCell = (self.pos[0], self.pos[1] - index)
-            if not self.outOfBounds(northCell): northCells.append(northCell)
-            if not self.outOfBounds(eastCell): eastCells.append(eastCell)
-            if not self.outOfBounds(westCell): westCells.append(westCell)
-            if not self.outOfBounds(southCell): southCells.append(southCell)
+            if not self.outOfBounds(northCell):
+                northCells.append(northCell)
+            if not self.outOfBounds(eastCell):
+                eastCells.append(eastCell)
+            if not self.outOfBounds(westCell):
+                westCells.append(westCell)
+            if not self.outOfBounds(southCell):
+                southCells.append(southCell)
         self.getFieldView(self.model.grid.get_cell_list_contents(northCells))
         self.getFieldView(self.model.grid.get_cell_list_contents(eastCells))
         self.getFieldView(self.model.grid.get_cell_list_contents(westCells))
         self.getFieldView(self.model.grid.get_cell_list_contents(southCells))
 
     def assingBox(self):
-        minions = [agent for agent in self.model.schedule.agents if type(agent) == MinionAgent]
+        minions = [agent for agent in self.model.schedule.agents if type(
+            agent) == MinionAgent]
         for minion in minions:
             if minion.box == None and len(self.foundBoxes) > 0:
                 minion.setDestination(self.foundBoxes[-1])
-                self.foundBoxes.pop()  
-    
+                self.foundBoxes.pop()
+
     def step(self):
-        if(len(self.destinationList) == 0): self.getDestinations()
+        if (len(self.destinationList) == 0):
+            self.getDestinations()
         self.move()
         self.searchSurroundings()
-        if(len(self.foundBoxes) > 0): self.assingBox()
+        if (len(self.foundBoxes) > 0):
+            self.assingBox()
         self.movements += 1
-    
